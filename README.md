@@ -1,1 +1,1 @@
-proyect python: 3.14
+proyect python: 3.13
