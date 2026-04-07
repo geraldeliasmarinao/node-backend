@@ -137,8 +137,8 @@ async def delete_note(note_id: str) -> Dict[str, str]:
         raise HTTPException(status_code=404, detail="Note not Found")
     
 
-        #eliminamos el documento de firestore
-        doc_ref.delete()
+    #eliminamos el documento de firestore
+    doc_ref.delete()
         
     return {
         "message": f"Note with ID {note_id} deleted"
