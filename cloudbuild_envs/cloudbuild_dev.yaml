@@ -18,7 +18,7 @@ steps:
         '--no-cache',
         '-t',
         'us-central1-docker.pkg.dev/notes-app-489020/notes-backend-artifact-repo/notes-backend:$COMMIT_SHA',
-        ','
+        '.'
       ]
 
   # paso3:subir la imagen al artifact registry
