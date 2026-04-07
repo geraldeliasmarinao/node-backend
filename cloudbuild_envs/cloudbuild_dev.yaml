@@ -1,0 +1,73 @@
+options:
+  logging: CLOUD_LOGGIN_ONLY
+
+steps:
+  #paso 1: autenticar con artifact registry
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:latest'
+    entrypoint: 'bash'
+    args:
+     - '-c'
+     - |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+
+  # paso2:construir la imagen de docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '--no-cache',
+        '-t',
+        'us-central1-docker.pkg.dev/notes-app-489020/notes-backend-artifact-repo/notes-backend:$COMMIT_SHA',
+        ','
+      ]
+
+  # paso3:subir la imagen al artifact registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        
+        'us-central1-docker.pkg.dev/notes-app-489020/notes-backend-artifact-repo/notes-backend:$COMMIT_SHA',
+        
+      ]
+
+  # paso4: desplegar la imagen a cloud run
+  - name: 'gcr.io/google.com/cloudsdktoll/cloud-sdk:latest'
+    args:
+      [
+        'gcloud',
+        'run',
+        'deploy',
+        'notes-backend-service',
+        '--image',
+        'us-central1-docker.pkg.dev/notes-app-489020/notes-backend-artifact-repo/notes-backend:$COMMIT_SHA',
+        '--platform',
+        'managed',
+        '--region',
+        'us-central1',
+        '--ingress',
+        'all',
+        '--allow-unauthenticated',
+        '--cpu',
+        '1',
+        '--memory',
+        '1Gi',
+        '--min-instances',
+        '0',
+        '--max-instances',
+        '3',
+        '--service-account',
+        'notes-backend-sa',
+        '--update-secrets',
+        'GCP_PROJECT_ID=GCP_PROJECT_ID:latest,FIRESTORE_DATABASE_ID=FIRESTORE_DATABASE_ID:latest',
+        '',
+        
+        
+      ]
+
+
+images:
+  - 'us-central1-docker.pkg.dev/notes-app-489020/notes-backend-artifact-repo/notes-backend:$COMMIT_SHA'
+  
+# minuto 44:30
+
